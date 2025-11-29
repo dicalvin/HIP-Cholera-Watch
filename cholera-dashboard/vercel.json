@@ -22,18 +22,15 @@
   "functions": {
     "api/health.py": {
       "memory": 1024,
-      "maxDuration": 10,
-      "runtime": "python3.11"
+      "maxDuration": 10
     },
     "api/predict.py": {
       "memory": 2048,
-      "maxDuration": 30,
-      "runtime": "python3.11"
+      "maxDuration": 30
     },
     "api/forecast.py": {
       "memory": 2048,
-      "maxDuration": 30,
-      "runtime": "python3.11"
+      "maxDuration": 30
     }
   }
 }
