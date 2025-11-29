@@ -1,43 +1,35 @@
-# Quick Vercel Deployment Guide
+# Vercel Quick Start Guide
 
 ## Prerequisites
 
-1. Vercel account: [vercel.com](https://vercel.com) (free)
-2. GitHub repository connected
+Before deploying to Vercel, ensure these files are in the **repository root** (same level as `cholera-dashboard/`):
+- `random_forest_model.pkl`
+- `cholera_data3.csv`
 
 ## Deployment Steps
 
-### Option 1: Deploy via Vercel Dashboard (Easiest)
+### Method 1: Vercel Dashboard (Easiest)
 
-1. **Go to Vercel Dashboard**
-   - Visit [vercel.com/dashboard](https://vercel.com/dashboard)
-   - Click "Add New..." → "Project"
-
-2. **Import Repository**
-   - Select `dicalvin/Cholera-Watch`
-   - Click "Import"
-
-3. **Configure Project**
+1. **Go to Vercel**: https://vercel.com
+2. **Sign in** with your GitHub account
+3. **Click "New Project"**
+4. **Import Repository**: Select `dicalvin/HIP-Chloera-Watch`
+5. **Configure Project**:
+   - **Root Directory**: `cholera-dashboard` (IMPORTANT!)
    - **Framework Preset**: Vite (auto-detected)
-   - **Root Directory**: `./` (leave as is)
    - **Build Command**: `npm run build` (auto-detected)
    - **Output Directory**: `dist` (auto-detected)
-   - **Install Command**: `npm install` (auto-detected)
+6. **Environment Variables**: Leave empty (or set `VITE_LSTM_API_URL` if needed)
+7. **Click "Deploy"**
 
-4. **Environment Variables** (Optional)
-   - If deploying API separately, add:
-     - `VITE_API_URL`: Your API URL
-
-5. **Deploy**
-   - Click "Deploy"
-   - Wait 2-3 minutes
-   - Your site will be live at: `https://your-project.vercel.app`
-
-### Option 2: Deploy via CLI
+### Method 2: Vercel CLI
 
 ```bash
-# Install Vercel CLI (if not installed)
-npm install -g vercel
+# Install Vercel CLI
+npm i -g vercel
+
+# Navigate to project
+cd cholera-dashboard
 
 # Login to Vercel
 vercel login
@@ -49,83 +41,66 @@ vercel
 vercel --prod
 ```
 
-## API Deployment Options
+## Important Notes
 
-### Option A: Deploy API Separately (Recommended)
+### File Locations
 
-Since Vercel serverless functions have limitations with large model files, deploy the API separately:
+The API functions look for:
+- `random_forest_model.pkl` 
+- `cholera_data3.csv`
 
-1. **Deploy to Render.com** (Free tier available)
-   - Go to [render.com](https://render.com)
-   - New → Web Service
-   - Connect GitHub repo: `dicalvin/Cholera-Watch`
-   - Root Directory: `api`
-   - Build: `pip install -r requirements.txt`
-   - Start: `python predict.py`
-   - Get your API URL (e.g., `https://cholera-api.onrender.com`)
+These should be in the **repository root** (not in `cholera-dashboard/`). The API will automatically search multiple paths to find them.
 
-2. **Update Frontend**
-   - In Vercel dashboard → Your project → Settings → Environment Variables
-   - Add: `VITE_API_URL` = `https://cholera-api.onrender.com/api/predict`
-   - Redeploy frontend
+### Root Directory Setting
 
-### Option B: Use Vercel Serverless Functions
+When deploying from Vercel dashboard, **set Root Directory to `cholera-dashboard`**. This tells Vercel where your project files are located.
 
-The API is configured for Vercel serverless functions, but model files need to be uploaded:
+### API Endpoints
 
-1. **Upload Model Files**
-   - Model files are too large for Git
-   - Upload to Vercel via dashboard or use Vercel CLI:
-     ```bash
-     vercel env add MODEL_PATH
-     ```
+After deployment, your API will be available at:
+- `https://your-project.vercel.app/api/health`
+- `https://your-project.vercel.app/api/lstm/predict`
+- `https://your-project.vercel.app/api/lstm/forecast`
 
-2. **Deploy**
-   - Vercel will automatically detect `api/index.py` as a serverless function
-   - Functions are available at `/api/predict` and `/health`
-
-## After Deployment
-
-1. **Test Frontend**
-   - Visit your Vercel URL
-   - Check all pages load correctly
-   - Test navigation
-
-2. **Test API**
-   - Health: `https://your-project.vercel.app/health`
-   - Or if separate: `https://your-api-url.com/health`
-
-3. **Check Predictions**
-   - Go to Early Warning page
-   - Verify forecasts are loading
-   - Check browser console for errors
-
-## Continuous Deployment
-
-Vercel automatically deploys on every push to `main`:
-- Push to GitHub → Vercel detects → Auto-deploys → Live in 2-3 minutes
-
-## Custom Domain
-
-1. Vercel Dashboard → Your Project → Settings → Domains
-2. Add your domain
-3. Follow DNS instructions
-4. SSL is automatic
+The frontend will automatically use these endpoints (relative paths).
 
 ## Troubleshooting
 
-### API 404 Errors
-- Check `vercel.json` configuration
-- Verify `api/index.py` exists
-- Check Vercel function logs in dashboard
+### "Model not found" errors
+- Verify `random_forest_model.pkl` is in the repository root
+- Check Vercel function logs in the dashboard
+- The API searches multiple paths automatically
 
-### Model Not Found
-- Upload model files to deployment platform
-- Check `MODEL_PATH` in code
-- Verify file paths
+### "Dataset not found" errors
+- Verify `cholera_data3.csv` is in the repository root
+- Check file size (Vercel has limits)
+- Review function logs
 
-### CORS Errors
-- Ensure `flask-cors` is installed
-- Check API URL is correct
-- Verify CORS is enabled in `predict.py`
+### Build fails
+- Check that `package.json` exists in `cholera-dashboard/`
+- Verify all dependencies are listed
+- Review build logs in Vercel dashboard
 
+### API returns 500 errors
+- Check Vercel function logs (most important!)
+- Verify Python dependencies in `api/requirements.txt`
+- Check that model and dataset files are accessible
+
+## Automatic Deployments
+
+Once connected to GitHub:
+- **Every push to `main`** → Production deployment
+- **Pull requests** → Preview deployments
+
+## Next Steps
+
+After successful deployment:
+1. Test the API: Visit `https://your-project.vercel.app/api/health`
+2. Test the frontend: Visit `https://your-project.vercel.app`
+3. Check function logs if anything doesn't work
+
+## Support
+
+- Vercel Documentation: https://vercel.com/docs
+- Function Logs: Vercel Dashboard → Your Project → Functions → Logs
+- Build Logs: Vercel Dashboard → Your Project → Deployments → View Logs
