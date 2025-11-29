@@ -1,21 +1,28 @@
 """
 Random Forest Model Prediction API
 Simple API for Random Forest model predictions using the trained model.
+Supports both Flask (for local development) and Vercel serverless functions.
 """
 
 import os
 import json
 import numpy as np
 import pandas as pd
-from flask import Flask, request, jsonify
-from flask_cors import CORS
 from datetime import datetime, timedelta
 import warnings
 import joblib
 warnings.filterwarnings('ignore')
 
-app = Flask(__name__)
-CORS(app)
+# Flask imports only for local development (not needed for Vercel)
+try:
+    from flask import Flask, request, jsonify
+    from flask_cors import CORS
+    app = Flask(__name__)
+    CORS(app)
+    FLASK_AVAILABLE = True
+except ImportError:
+    FLASK_AVAILABLE = False
+    app = None
 
 # Base directory - go up two levels from api/ to get to Cholera root
 # For Vercel, files might be in different locations, try multiple paths
